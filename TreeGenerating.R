@@ -153,13 +153,13 @@ l9 <- add_counts(next_set(l8))
 tic() # this one takes about 25 seconds
 l10 <- add_counts(next_set(l9)) # there are 4862 trees on 10 leaves (takes up 12.8 MB)
 toc()
-tic() # this one takes about XX seconds
-l11 <- next_set(l10)
-l11 <- add_counts(next_set(l11)) # there are XXX trees on 10 leaves (takes up XXX MB)
-toc()
+l11 <- next_set(l10) # don't try to run add_counts for this one!
 
 # index values:
-get_index_values(l10)
+get_index_values(l11)
+# uniform model index values for trees on 11 leaves will be wrong 
+# because duplicates haven't been removed
+# there should be only 16796 trees (not 48620)
 
 # histogram:
 pdf("HistogramTenLeaves.pdf", width = 5, height = 3)

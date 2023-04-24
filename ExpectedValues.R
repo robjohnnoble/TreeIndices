@@ -1,3 +1,5 @@
+library(ggplot2)
+
 # Node balance function
 myf <- function(p) {
   if(p==0 | p==1) return(0)
@@ -44,11 +46,11 @@ g2 <- function(n, terms = 1) {
   return(res)
 }
 
-n_exact <- 2:10
+n_exact <- 2:11
 
 # Exact values of n log2(n) / E(J^1) and E(I_S) for Yule process:
-EJ1 <- c(2, 5, 216/25, 728/57, 1162800/67217, 199806750/9017743, 27.29901, 32.68993, 38.30246)
-EIS <- c(2, 5, 26/3, 77/6, 87/5, 223/10, 27.48571, 32.92143, 38.57937)
+EJ1 <- c(2, 5, 216/25, 728/57, 1162800/67217, 199806750/9017743, 27.29901, 32.68993, 38.30246, 44.11464)
+EIS <- c(2, 5, 26/3, 77/6, 87/5, 223/10, 27.48571, 32.92143, 38.57937, 44.43730)
 
 EJ1_over_2n <- c(1/2, 5/6, 27/25, 364/285, 96900/67217, 28543821/18035486)
 EIS_over_2n <- c(1/2, 5/6, 13/12, 77/60, 29/20, 223/140)
@@ -58,8 +60,8 @@ EIS_over_2n_plus_1 <- c(3/2, 11/6, 25/12, 137/60, 49/20, 363/140)
 ratios <- c(1, 1, 624/625, 2596/2603, 3282340/3293633, 465793070/467634387)
 
 # Exact values of n log2(n) / E(J^1) and E(I_S) for uniform model:
-EJ1_Unif <- c(2, 5, 360/41, 3822/289, 18.25643, 23.81979, 29.87282, 36.38201, 43.31989)
-EIS_Unif <- c(2, 5, 44/5, 93/7, 18.38095, 24.0303, 30.19114, 36.82937, 43.91691)
+EJ1_Unif <- c(2, 5, 360/41, 3822/289, 18.25643, 23.81979, 29.87282, 36.38201, 43.31989, NA)
+EIS_Unif <- c(2, 5, 44/5, 93/7, 18.38095, 24.0303, 30.19114, 36.82937, 43.91691, NA)
 
 EJ1_Unif_over_n <- c(1, 5/3, 90/41, 3822/1445, NA, NA)
 EIS_Unif_over_n <- c(1, 5/3, 11/5, 93/35, NA, NA)
@@ -73,27 +75,74 @@ points(EIS_Unif ~ n_exact, col = "red", pch = 3) # Exact values
 
 # n log2(n) / E(I_S):
 #n <- unique(c(2:16, round(2^seq(4, 9, length = 40))))
-n <- 2:20
+n <- 2:10
+n_cts <- seq(2, 11, length = 1e3)
 pdf("ExpectedValuesCloseUp.pdf", width = 5, height = 5)
 par(mar = c(4,4,1,1))
-plot(n*log2(n) / sapply(n, f1a) ~ n, xlim = c(2, 20), ylim = c(0.6, 1),
-     xlab = "number of leaves, n", ylab = "index value") # uniform model exact expression
-lines(sapply(n, f3_inverse) ~ n, col = "grey", lwd = 2) # uniform model approximation
-points(sapply(n, g1) ~ n) # Yule process exact expression
-lines(sapply(n, g2) ~ n, col = "grey", lwd = 2) # Yule process approximation
-points(n_exact*log2(n_exact) / EJ1 ~ n_exact, col = "red", pch = 3) # Yule process exact values
+plot(n*log2(n) / sapply(n, f1a) ~ n, xlim = c(2, 10), ylim = c(0.75, 1),
+     xlab = "number of leaves, n", ylab = "index value", col = "red") # uniform model exact expression
+lines(sapply(n_cts, f3_inverse) ~ n_cts, col = "#FFcccc", lwd = 2) # uniform model approximation
+points(sapply(n, g1) ~ n, col = "blue") # Yule process exact expression
+lines(sapply(n_cts, g2) ~ n_cts, col = "#ccccFF", lwd = 2) # Yule process approximation
+points(n_exact*log2(n_exact) / EJ1 ~ n_exact, col = "blue", pch = 3) # Yule process exact values
 points(n_exact*log2(n_exact) / EJ1_Unif ~ n_exact, col = "red", pch = 3) # uniform model exact values
 #abline(h = 1 / (2 * log(2)), lty = 2)
 #points(sapply(n, sumf) ~ n, col = "orange") # balance score of root node
-legend(x = 2, y = 0.4, legend = c("n log n / E(I_S)", 
-                                "E(J^1)"), 
-       col = c("black", "red"), 
-       pch = c(1, 3), 
+legend(x = 4.5, y = 1.01, legend = c("Yule process: E(J^1)",
+                                   "Yule process: n log n / E(I_S)",
+                                   "Uniform model: E(J^1)", 
+                                   "Uniform model: n log n / E(I_S)"),
+       col = c("blue", "blue", "red", "red"), 
+       pch = c(3, 1, 3, 1), 
        bty = "n")
-legend(x = 2, y = 0.2, legend = c("n log n / [approximation of E(I_S)]"), 
-       col = c("grey"), 
-       lty = 1, 
+legend(x = 2, y = 0.79, legend = c("Yule process approximation", 
+                                  "Uniform model approximation"), 
+       col = c("#ccccFF", "#ffcccc"), 
+       lwd = 2,  
        bty = "n")
+dev.off()
+
+n <- 2:10
+df <- data.frame(n = n, 
+                 value = n*log2(n) / sapply(n, f1a), 
+                 model = "uniform",
+                 type = "I_S")
+df <- rbind(df, data.frame(
+  n = n, 
+  value = sapply(n, g1), 
+  model = "Yule",
+  type = "I_S"))
+df <- rbind(df, data.frame(
+  n = n_exact, 
+  value = n_exact*log2(n_exact) / EJ1_Unif, 
+  model = "uniform",
+  type = "J1"))
+df <- rbind(df, data.frame(
+  n = n_exact, 
+  value = n_exact*log2(n_exact) / EJ1, 
+  model = "Yule",
+  type = "J1"))
+df <- rbind(df, data.frame(
+  n = n_cts, 
+  value = sapply(n_cts, f3_inverse), 
+  model = "uniform",
+  type = "approx"))
+df <- rbind(df, data.frame(
+  n = n_cts, 
+  value = sapply(n_cts, g2), 
+  model = "Yule",
+  type = "approx"))
+pdf("ExpectedValuesGgplot.pdf", width = 4, height = 4)
+ggplot(filter(df, type != "approx"), aes(x = n, y = value, group = interaction(model, type), color = model, shape = type)) + 
+  geom_point() + 
+  geom_line(data = filter(df, type == "approx"), aes(x = n, y = value, group = interaction(model, type), color = model)) + 
+  xlim(2, 10) + 
+  ylim(0.75, 1) + 
+  xlab("number of leaves, n") + 
+  ylab("index value") + 
+  theme_classic() + 
+  theme(legend.background = element_rect(fill=NA)) + 
+  theme(legend.position = c(0.15, 0.32))
 dev.off()
 
 # E(1 / X) >= 1 / E(X)
@@ -148,7 +197,8 @@ lines(sapply(k-1, neg_binom, p = 1/2, r = 3) ~ k, col = "#FF0099")
 
 #######
 
-I_S_index <- function(tree) { # Sackin's index
+# Sackin's index:
+I_S_index <- function(tree) { 
   I_S <- 0 # initialise sum, which will eventually be equal to Sackin's index
   for(i in 1:length(tree)) { # loop over all levels of the tree
     if(i < length(tree)) { # if the current level isn't the bottom level
@@ -161,7 +211,8 @@ I_S_index <- function(tree) { # Sackin's index
   return(I_S)
 }
 
-H_index <- function(tree) {
+# Corrected phylogenetic entropy:
+H_index <- function(tree) { 
   sum1 <- 0 # initialise sum, which will eventually be equal to H * I_S
   I_S <- I_S_index(tree) # Sackin's index
   for(i in 1:length(tree)) { # loop over all levels of the tree
@@ -172,8 +223,14 @@ H_index <- function(tree) {
   return(sum1 / I_S)
 }
 
-# n = 5:
+# Here bifurcating trees are encoded by branch weights at each level
+# for example list(c(4,1), c(3,1), c(2,1), c(1,1))
+# encodes a caterpillar tree, such that the root has descendant branches with weights 4 and 1, 
+# the first of these branches leads to a node with descendant branch weights 3 and 1, 
+# the first of those branches leads to a node with descendant branch weights 2 and 1, 
+# the first of these branches leads to a node with descendant branch weights 1 and 1
 
+# for leaf count n = 5, we need only consider three distinct trees:
 trees <- list(
   list(c(4,1), c(3,1), c(2,1), c(1,1)),
   list(c(4,1), c(2,2), c(1,1,1,1)),
@@ -182,6 +239,7 @@ trees <- list(
 
 H <- sapply(trees, H_index)
 
+# counts for each of the three trees (i.e. how often such trees are generated by the Yule process):
 tree_counts <- c(2, 1, 3)
 
 tree_counts %*% H / sum(tree_counts) # arithmetic mean of H
@@ -196,6 +254,7 @@ tree_counts %*% I_S / sum(tree_counts) # arithmetic mean of I_S
 tree4 <- list(c(5,2), c(4,1,1,1), c(3,1), c(2,1), c(1,1))
 tree5 <- list(c(6,1), c(4,2), c(2,2,1,1), c(1,1,1,1))
 
+# tree4 and tree5 have identical I_S but different H values:
 identical(I_S_index(tree4), I_S_index(tree5)) # TRUE
 identical(H_index(tree4), H_index(tree5)) # FALSE
 
