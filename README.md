@@ -3,7 +3,7 @@
 Tree indices work following [Lemant *et al.* 2022](https://academic.oup.com/sysbio/article/71/5/1210/6567363).
 
 `Calculate_indices`
-* Calculates tree shape indices accounting for branch lengths
+* Calculates tree shape indices accounting for branch lengths, as described in [Noble & Verity 2023](https://www.biorxiv.org/content/10.1101/2023.07.17.549219)
 * Can read various formats of tree data and convert to phylo object
 
 `ExpectedValues.R`
