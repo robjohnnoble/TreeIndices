@@ -1,6 +1,6 @@
 # TreeIndices
  
-Tree indices work following Lemant *et al.* 2022.
+Tree indices work following [Lemant *et al.* 2022](https://academic.oup.com/sysbio/article/71/5/1210/6567363).
 
 `Calculate_indices`
 * Calculates tree shape indices accounting for branch lengths
