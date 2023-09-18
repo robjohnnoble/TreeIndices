@@ -2,6 +2,10 @@
  
 Tree indices work following Lemant *et al.* 2022.
 
+`Calculate_indices`
+* Calculates tree shape indices accounting for branch lengths
+* Can read various formats of tree data and convert to phylo object
+
 `ExpectedValues.R`
 * Calculates various approximations of $E(J^1)$ under the Yule and uniform models
 * Plots the expected values and approximations
@@ -17,5 +21,5 @@ Tree indices work following Lemant *et al.* 2022.
 * Plots histograms of $J^1$ values for the Yule and uniform processes
 
 Goals:
-* Improve commenting and documentation of existing code
-* Integrate this code with previous code from the `RUtreebalance` repository and various files not yet on GitHub
+* Improve commenting and documentation
+* Integrate this code with previous code from the `RUtreebalance` repository
